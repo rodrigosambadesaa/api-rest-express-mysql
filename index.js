@@ -6,6 +6,7 @@ import provedorRouter from './routers/provedoresRouters.js'
 
 import { PORT } from './constants.js'
 const app = express()
+app.use(express.json())
 
 
 // Rutas

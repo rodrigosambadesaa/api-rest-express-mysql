@@ -1,8 +1,7 @@
+import e from 'express'
 import { DB } from '../connect.js'
 
 class ProveedoresController {
-  
-
 
     consultarTodos(_, res) {
         try {
@@ -26,12 +25,35 @@ class ProveedoresController {
                     }
                 }
         } catch (error) {
-
+            console.log(error)
         }
     }
 
-    crearProveedor(_, res) {
-        res.send('Crear un provedor')
+    crearProveedor(req, res) {
+        const { id, nombre } = req.body 
+        try {
+            DB.query(`INSERT INTO provedores (prv_id, prv_nome) VALUES (${id}, '${nombre}')`)
+                , (err, result) => {
+                    if (err) {
+                        console.log(err)
+                        return res.status(500).json({
+                            message: 'Erro ao crear provedor'
+                        })
+                    }
+
+                 
+                        return res.status(201).json({
+                            message: 'Provedor creado con éxito',
+                            result
+                        })
+                    
+                   
+
+                }
+
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     verDetalleProveedor(req, res) {
