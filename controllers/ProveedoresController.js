@@ -1,12 +1,10 @@
-import e from 'express'
 import { DB } from '../connect.js'
 
 class ProveedoresController {
 
     consultarTodos(_, res) {
         try {
-            DB.query('SELECT * FROM provedores')
-                , (err, result) => {
+            DB.query('SELECT * FROM provedores', (err, result) => {
                     if (err) {
                         console.log(err)
                         res.status(500).json({
@@ -23,17 +21,20 @@ class ProveedoresController {
                             message: 'Ningún provedor encontrado'
                         })
                     }
-                }
+                })
         } catch (error) {
             console.log(error)
         }
     }
 
     crearProveedor(req, res) {
-        const { id, nombre } = req.body 
+        const { nombre } = req.body
+        console.log(nombre)
         try {
-            DB.query(`INSERT INTO provedores (prv_id, prv_nome) VALUES (${id}, '${nombre}')`)
-                , (err, result) => {
+            DB.query(
+                `INSERT INTO provedores (prv_id, prv_nome) VALUES (NULL, ?)`,
+                [nombre],
+                (err, result) => {
                     if (err) {
                         console.log(err)
                         return res.status(500).json({
@@ -41,43 +42,97 @@ class ProveedoresController {
                         })
                     }
 
-                 
-                        return res.status(201).json({
-                            message: 'Provedor creado con éxito',
+
+                    return res.status(201).json({
+                        message: 'Provedor creado con éxito',
+                        result
+                    })
+
+
+
+                });
+
+        } catch (error) {
+            res.json(error)
+        }
+    }
+
+    verDetalleProveedor(req, res) {
+        try {
+            DB.query('SELECT * FROM provedores WHERE prv_id = ?', [req.params.codigo], (err, result) => {
+                if (err) {
+                    console.log(err)
+                    res.status(500).json({
+                        message: 'Erro ao consultar provedor'
+                    })
+                } else {
+                    if (result) {
+                        res.status(201).json({
+                            message: 'Provedor consultado con éxito',
                             result
                         })
-                    
-                   
-
+                    }
+                    return res.status(401).json({
+                        message: 'Ningún provedor encontrado'
+                    })
                 }
-
+            })
         } catch (error) {
             console.log(error)
         }
     }
 
-    verDetalleProveedor(req, res) {
-        const { codigo } = req.params
-        res.json({
-            message: 'Ver detalle provedor',
-            codigo
-        })
-    }
-
     actualizarProveedor(req, res) {
         const { codigo } = req.params
-        res.json({
-            message: 'Actualizar provedor',
-            codigo
-        })
+        const { nombre } = req.body
+        try {
+            DB.query('UPDATE provedores SET prv_nome = ? WHERE prv_id = ?', [nombre, codigo], (err, result) => {
+                if (err) {
+                    console.log(err)
+                    res.status(500).json({
+                        message: 'Erro ao actualizar provedor'
+                    })
+                } else {
+                    if (result.affectedRows > 0) {
+                        res.status(201).json({
+                            message: 'Provedor actualizado con éxito',
+                            result
+                        })
+                    }
+                    return res.status(401).json({
+                        message: 'Ningún provedor actualizado'
+                    })
+                }
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     eliminarProveedor(req, res) {
         const { codigo } = req.params
-        res.json({
-            message: 'Eliminar provedor',
-            codigo
-        })
+        try {
+            DB.query('DELETE FROM provedores WHERE prv_id = ?', [codigo], (err, result) => {
+                if (err) {
+                    console.log(err)
+                    res.status(500).json({
+                        message: 'Erro ao eliminar provedor'
+                    })
+                } else {
+                    if (result.affectedRows > 0) {
+                        res.status(201).json({
+                            message: 'Provedor eliminado con éxito',
+                            result
+                        })
+                    }
+                    return res.status(401).json({
+                        message: 'Ningún provedor eliminado'
+                    })
+                }
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
 
