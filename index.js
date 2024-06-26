@@ -1,8 +1,7 @@
 // const express = require('express') // commonjs
 import express from 'express' // ES modules
 
-import artigosRouter from './routers/artigosRouters.js'
-import provedorRouter from './routers/provedoresRouters.js'
+import petRouter from './routers/petRouter.js'
 
 import { PORT } from './constants.js'
 const app = express()
@@ -14,11 +13,10 @@ app.get(
     '/',
     (_, res) => {
         res.status(200).send("Home")
-    }   
+    }
 )
 
-app.use('/artigos',artigosRouter)
-app.use('/provedores',provedorRouter)
+app.use('/pets', petRouter)
 
 
 
